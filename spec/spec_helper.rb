@@ -4,8 +4,21 @@
 # loaded once.
 #
 # See http://rubydoc.info/gems/rspec-core/RSpec/Core/Configuration
+require "butcher"
+Dir["#{File.dirname(__FILE__)}/support/**/*.rb"].each { |f| require f unless /_spec\.rb$/.match(f) }
+
 RSpec.configure do |config|
   config.treat_symbols_as_metadata_keys_with_true_values = true
   config.run_all_when_everything_filtered = true
   config.filter_run :focus
+
+  config.mock_with :mocha
+
+  config.before(:each) do
+    TestCache.reset
+  end
+
+  config.after(:suite) do
+    TestCache.cleanup
+  end
 end

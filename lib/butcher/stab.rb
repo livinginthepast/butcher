@@ -1,0 +1,2 @@
+module Butcher::Stab
+end

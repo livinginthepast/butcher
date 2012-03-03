@@ -1,12 +1,15 @@
 #!/usr/bin/env ruby
 
+require 'butcher'
 require 'optparse'
 
 options = {}
 OptionParser.new do |opts|
-  opts.banner = "Usage: stab [options]"
+  opts.banner = "Usage: stab [options] node_name"
 
-  opts.on("-v", "--[no-]verbose", "Run verbosely") do |v|
-    options[:verbose] = v
-  end
+  #opts.on("-v", "--[no-]verbose", "Run verbosely") do |v|
+  #  options[:verbose] = v
+  #end
 end.parse!
+
+Butcher::Stab::CLI.new.run(ARGV)
