@@ -1,14 +1,14 @@
 require 'spec_helper'
 
 describe Butcher::Cache, "initialization" do
-  before do
-    @cache_class = Butcher::Cache.clone
-    @cache_class.any_instance.stubs(:cache_dir).returns("tmp/cache_stub")
-  end
+  ## singletons do not reset after initialization, so we run tests against clones
+  let(:cache_class) { Butcher::Cache.clone }
+
+  before { cache_class.any_instance.stubs(:cache_dir).returns("tmp/cache_stub") }
 
   it "should create cache directory" do
     test(?d, "tmp/cache_stub").should be_false
-    Butcher::Cache.instance
+    cache_class.instance
     test(?d, "tmp/cache_stub").should be_true
   end
 end
@@ -16,6 +16,7 @@ end
 describe Butcher::Cache, "#nodes" do
   context "cache file does not exist" do
     let(:cache_file) { "#{TestCache.cache_dir}/node.cache" }
+
     before do
       File.exists?(cache_file).should be_false
       Butcher::Cache.any_instance.stubs(:`).with("knife status").returns("knife return codes")

@@ -11,15 +11,12 @@ class Butcher::Cache
   end
 
   def nodes
-    unless File.exists?(nodes_file)
-      create_node_cachefile
-    end
-
     hash = {}
-    file = File.new(nodes_file)
-    while file.gets
-      node = $_.split(", ")
-      hash[node[3]] = [node[1],node[2]]
+    cache_file do |file|
+      while file.gets
+        node = $_.split(", ")
+        hash[node[3]] = [node[1],node[2]]
+      end
     end
     hash
   end
@@ -37,6 +34,16 @@ class Butcher::Cache
   def create_node_cachefile
     File.open(nodes_file, "w") do |file|
       file.puts `knife status`
+    end
+  end
+
+  def cache_file(&block)
+    unless File.exists?(nodes_file)
+      create_node_cachefile
+    end
+
+    File.open(nodes_file) do |f|
+      block.call f
     end
   end
 end
