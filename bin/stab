@@ -3,6 +3,8 @@
 require 'butcher'
 require 'optparse'
 
+EX_USAGE = 64
+
 options = {}
 parser = OptionParser.new do |opts|
   opts.banner = "Usage: stab [options] node_name"
@@ -16,11 +18,17 @@ parser = OptionParser.new do |opts|
   #  options[:verbose] = v
   #end
 end
-parser.parse!
+
+begin parser.parse!
+rescue OptionParser::InvalidOption => e
+  puts e
+  puts parser
+  exit EX_USAGE
+end
 
 if ARGV == []
   puts parser
-  exit
+  exit EX_USAGE
 end
 
 Butcher::Stab::CLI.new.run(ARGV)
