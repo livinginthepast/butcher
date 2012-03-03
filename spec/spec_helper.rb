@@ -14,11 +14,5 @@ RSpec.configure do |config|
 
   config.mock_with :mocha
 
-  config.before(:each) do
-    TestCache.reset
-  end
-
-  config.after(:suite) do
-    TestCache.cleanup
-  end
+  Butcher::TestCache.setup_rspec(config)
 end

@@ -15,7 +15,7 @@ end
 
 describe Butcher::Cache, "#nodes" do
   context "cache file does not exist" do
-    let(:cache_file) { "#{TestCache.cache_dir}/node.cache" }
+    let(:cache_file) { "#{Butcher::TestCache.cache_dir}/node.cache" }
 
     before do
       File.exists?(cache_file).should be_false
