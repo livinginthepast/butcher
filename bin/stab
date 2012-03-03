@@ -4,12 +4,23 @@ require 'butcher'
 require 'optparse'
 
 options = {}
-OptionParser.new do |opts|
+parser = OptionParser.new do |opts|
   opts.banner = "Usage: stab [options] node_name"
+
+  opts.on('-h', '--help', 'Display this screen') do
+    puts opts
+    exit
+  end
 
   #opts.on("-v", "--[no-]verbose", "Run verbosely") do |v|
   #  options[:verbose] = v
   #end
-end.parse!
+end
+parser.parse!
+
+if ARGV == []
+  puts parser
+  exit
+end
 
 Butcher::Stab::CLI.new.run(ARGV)

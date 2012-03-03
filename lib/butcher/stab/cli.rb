@@ -2,9 +2,9 @@ class Butcher::Stab::CLI
   attr_accessor :node_matcher
 
   def run(arguments)
-    return "" if arguments.nil?
-
     self.node_matcher = Array(arguments).first
+    return "" if node_matcher.nil?
+
     exec("ssh #{matching_node}")
   end
 
@@ -16,7 +16,7 @@ class Butcher::Stab::CLI
     end
 
     raise(Butcher::UnmatchedNode) if nodes.size == 0
-    raise(Butcher::AmbiguousNode) if nodes.size > 1
+    raise(Butcher::AmbiguousNode, nodes.values.flatten.uniq) if nodes.size > 1
     nodes.keys.first
   end
 end
