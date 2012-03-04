@@ -25,7 +25,18 @@ Feature: Stab
     Usage: stab [options] node_name
     """
 
-#  Scenario: User connects to listed node name
-#    Given I have a chef node named "app.node"
-#    When I run `stab app.node`
-#    Then I should be connected to "app.node"
+  Scenario: User connects to listed node name
+    Given pending
+    Given I have the following chef nodes:
+      | 1 hour ago | app.node | app.domain | 192.168.0.1 | os |
+    And I could run `ssh 192.168.0.1` with stdout:
+    """
+    SSH success!
+    """
+
+    When I run `stab app.node`
+    And the exit status should be 0
+    And the output should contain:
+    """
+    SSH success!
+    """

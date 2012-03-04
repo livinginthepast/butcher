@@ -21,11 +21,11 @@ class Butcher::Cache
     hash
   end
 
-  private
-
-  def cache_dir
+  def cache_dir # :nodoc:
     CACHE_DIR
   end
+
+  private
 
   def nodes_file
     "#{cache_dir}/#{NODES_FILENAME}"

@@ -17,6 +17,7 @@
 #    require 'butcher'
 #    Before { Butcher::TestCache.reset }
 #    After { Butcher::TestCache.cleanup }
+#    World(Butcher::TestCache::TestHelpers)
 #
 module Butcher::TestCache
   def self.setup_rspec(config)
@@ -29,6 +30,7 @@ module Butcher::TestCache
     end
 
     config.extend(RSpecExampleHelpers)
+    config.include(TestHelpers)
   end
 
   def self.reset # :nodoc:
@@ -63,7 +65,7 @@ module Butcher::TestCache
   # These cannot be called from within tests themselves.
   module RSpecExampleHelpers
 
-    # Create a file that Butcher::Cache can parse.
+    # Creates a file that Butcher::Cache can parse before every test in the current context.
     # Used for testing the Cache class itself.
     #
     # example:
@@ -71,15 +73,13 @@ module Butcher::TestCache
     #      f.puts "1 hour ago, node.name, node.domain, 192.168.1.1, os name"
     #    end
     #
-    def create_cache_file(filename)
+    def create_cache_file(filename, &block)
       before do
-        File.open("#{Butcher::TestCache.cache_dir}/#{filename}", "w") do |file|
-          yield file
-        end
+        create_cache_file(filename, &block)
       end
     end
 
-    # Mock out responses on Butcher::Cache.
+    # Mock out responses on Butcher::Cache for every test in the current context.
     # Used in classes where you want to test against expected output from Cache.
     #
     # example:
@@ -90,6 +90,19 @@ module Butcher::TestCache
     def mock_cache(type, &block)
       before do
         Butcher::Cache.any_instance.stubs(type).returns(block.call)
+      end
+    end
+  end
+
+  # == TestHelpers
+  #
+  # RSpec helpers that can be used within tests
+  module TestHelpers
+
+    # Creates a file that Butcher::Cache can parse
+    def create_cache_file(filename)
+      File.open("#{Butcher::TestCache.cache_dir}/#{filename}", "w") do |file|
+        yield file
       end
     end
   end
