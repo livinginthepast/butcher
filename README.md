@@ -13,6 +13,13 @@ level of a chef directory.
 SSH into a node based on a grep of the node name.
 
         Usage: stab [options] node_name
+          -h, --help             # prints usage
+          -c, --cache-dir DIR    # saves node list here (default: /tmp/butcher)
+          -f, --force            # download new node list even if a cache file exists
+          -v, --verbose          # be expressive
+
+Node name is loosely matched against name attributes given to nodes in chef. If multiple
+nodes match a given string, a Butcher::AmbiguousNode error is thrown and the program exits.
 
 ## License
 
