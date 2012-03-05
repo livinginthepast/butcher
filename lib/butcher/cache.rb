@@ -10,9 +10,9 @@ class Butcher::Cache
     FileUtils.mkdir_p(cache_dir)
   end
 
-  def nodes
+  def nodes(options = {})
     hash = {}
-    cache_file do |file|
+    cache_file(options) do |file|
       while file.gets
         node = $_.split(", ")
         hash[node[3]] = [node[1],node[2]]
@@ -37,8 +37,9 @@ class Butcher::Cache
     end
   end
 
-  def cache_file(&block)
-    unless File.exists?(nodes_file)
+  def cache_file(options, &block)
+    if options[:force] || !File.exists?(nodes_file)
+      puts "Creating cache file of nodes" if options[:verbose]
       create_node_cachefile
     end
 

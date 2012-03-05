@@ -13,7 +13,7 @@ class Butcher::Stab::CLI
   private
 
   def matching_node
-    nodes = Butcher::Cache.instance.nodes.select do |k, v|
+    nodes = Butcher::Cache.instance.nodes(options).select do |k, v|
       String(v).include? self.node_matcher
     end
 

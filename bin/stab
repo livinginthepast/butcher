@@ -18,9 +18,13 @@ parser = OptionParser.new do |opts|
     ENV["CACHE_DIR"] = dir
   end
 
-  #opts.on("-v", "--[no-]verbose", "Run verbosely") do |v|
-  #  options[:verbose] = v
-  #end
+  opts.on('-f', '--force', 'Check for new nodes even if a cache file exists') do
+    options[:force] = true
+  end
+
+  opts.on("-v", "--[no-]verbose", "Run verbosely") do |v|
+    options[:verbose] = v
+  end
 end
 
 begin parser.parse!
