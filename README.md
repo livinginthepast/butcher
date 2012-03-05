@@ -21,6 +21,19 @@ SSH into a node based on a grep of the node name.
 Node name is loosely matched against name attributes given to nodes in chef. If multiple
 nodes match a given string, a Butcher::AmbiguousNode error is thrown and the program exits.
 
+        > knife status
+        1 hours ago, app.node, app.domain.com, 1.1.1.1, solaris2 5.11.
+        5 minutes ago, other.node, other.domain.com, 1.1.1.2, solaris2 5.11.
+
+        > stab something
+        Unable to find node "something"
+
+        > stab node
+        Multiple nodes match "node"
+        ["app.node", "app.domain.com"] => 1.1.1.1
+        ["other.node", "other.domain.com"] => 1.1.1.2
+
+
 ## License
 
 Copyright 2012 ModCloth
