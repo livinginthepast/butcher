@@ -24,7 +24,7 @@ class Butcher::Stab::CLI
     end
 
     raise(Butcher::UnmatchedNode) if nodes.size == 0
-    raise(Butcher::AmbiguousNode, nodes.values.flatten.uniq) if nodes.size > 1
+    raise(Butcher::AmbiguousNode, Butcher::Cache.format_nodes_for_stderr(nodes)) if nodes.size > 1
     nodes.keys.first
   end
 end

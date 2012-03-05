@@ -25,6 +25,12 @@ class Butcher::Cache
     ENV["CACHE_DIR"] || CACHE_DIR
   end
 
+  def self.format_nodes_for_stderr(nodes)
+    nodes.map do |key, value|
+      %Q{#{value} => #{key}}
+    end.sort.join("\n")
+  end
+
   private
 
   def nodes_file

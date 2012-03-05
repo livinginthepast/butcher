@@ -1,11 +1,11 @@
 Feature: Stab
 
   Background:
-    # stubbing knife currently doesn't work, but tests pass anyways
-    #Given I could run `knife status` with stdout:
-    #"""
-    #1 minute ago, app.node, app.domain, 1.1.1.1, os
-    #"""
+  # stubbing knife currently doesn't work, but tests pass anyways
+  #Given I could run `knife status` with stdout:
+  #"""
+  #1 minute ago, app.node, app.domain, 1.1.1.1, os
+  #"""
     And I could run `ssh 1.1.1.1` with stdout:
     """
     ssh yay!
@@ -61,3 +61,27 @@ Feature: Stab
     When I run `stab app.node -c tmp/test -f -v`
     Then the output should contain "Creating cache file of nodes"
     #And the exit status should be 0      ## Butcher::Cache does not use stubbed knife
+
+  Scenario: User sees error message if no node matches given name
+    Given I have the following chef nodes:
+      | 1 minute ago | app.node | app.domain | 1.1.1.1 | os |
+    When I run `stab some.node -c tmp/test`
+    Then the stderr should contain:
+    """
+    Unable to find node "some.node"
+    """
+    And the exit status should be 65
+
+  Scenario: User sees error message if multiple nodes match given name
+    Given I have the following chef nodes:
+      | 1 minute ago | other.node | other.domain | 1.1.1.2 | os |
+      | 1 minute ago | app.node   | app.domain   | 1.1.1.1 | os |
+    When I run `stab node -c tmp/test`
+    Then the stderr should contain:
+    """
+    Multiple nodes match "node"
+    ["app.node", "app.domain"] => 1.1.1.1
+    ["other.node", "other.domain"] => 1.1.1.2
+    """
+    And the exit status should be 66
+

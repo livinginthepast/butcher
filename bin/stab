@@ -3,7 +3,9 @@
 require 'butcher'
 require 'optparse'
 
-EX_USAGE = 64
+EX_USAGE     = 64
+EX_UNMATCHED = 65
+EX_AMBIGUOUS = 66
 
 options = {}
 parser = OptionParser.new do |opts|
@@ -39,4 +41,13 @@ if ARGV == []
   exit EX_USAGE
 end
 
-Butcher::Stab::CLI.new.run(ARGV, options)
+begin
+  Butcher::Stab::CLI.new.run(ARGV, options)
+rescue Butcher::UnmatchedNode
+  STDERR.puts %Q{Unable to find node "#{ARGV.first}"}
+  exit EX_UNMATCHED
+rescue Butcher::AmbiguousNode => e
+  STDERR.puts %Q{Multiple nodes match "#{ARGV.first}"}
+  STDERR.puts e.message
+  exit EX_AMBIGUOUS
+end
