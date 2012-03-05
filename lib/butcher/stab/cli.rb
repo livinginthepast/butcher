@@ -1,7 +1,9 @@
 class Butcher::Stab::CLI
   attr_accessor :node_matcher
+  attr_accessor :options
 
-  def run(arguments)
+  def run(arguments, options = {})
+    self.options = options
     self.node_matcher = Array(arguments).first
     return "" if node_matcher.nil?
 

@@ -40,6 +40,7 @@ module Butcher::TestCache
 
   def self.cleanup # :nodoc:
     FileUtils.rm_rf("tmp")
+    ENV.delete("CACHE_DIR")
   end
 
   def self.cache_dir # :nodoc:
@@ -54,7 +55,7 @@ module Butcher::TestCache
   end
 
   def self.stub_cache
-    Butcher::Cache.any_instance.stubs(:cache_dir).returns(cache_dir)
+    ENV["CACHE_DIR"] = cache_dir
   end
 
   public

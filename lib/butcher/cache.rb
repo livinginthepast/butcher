@@ -22,7 +22,7 @@ class Butcher::Cache
   end
 
   def cache_dir # :nodoc:
-    CACHE_DIR
+    ENV["CACHE_DIR"] || CACHE_DIR
   end
 
   private
@@ -33,7 +33,7 @@ class Butcher::Cache
 
   def create_node_cachefile
     File.open(nodes_file, "w") do |file|
-      file.puts `knife status`
+      file.puts %x[knife status]
     end
   end
 
