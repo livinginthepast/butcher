@@ -6,7 +6,7 @@ Feature: Stab
   #"""
   #1 minute ago, app.node, app.domain, 1.1.1.1, os
   #"""
-    And I could run `ssh 1.1.1.1` with stdout:
+    Given I could run `ssh 1.1.1.1` with stdout:
     """
     ssh yay!
     """
@@ -85,3 +85,15 @@ Feature: Stab
     """
     And the exit status should be 66
 
+  Scenario: User can connect to server with given user name
+    Given I have the following chef nodes:
+      | 1 minute ago | app.node | app.domain | 1.1.1.1 | os |
+    Given I could run `ssh 1.1.1.1 -l user` with stdout:
+    """
+    user: I'm a computer!
+    """
+    When I run `stab app.node -c tmp/test -l user`
+    Then the stdout should contain:
+    """
+    user: I'm a computer!
+    """

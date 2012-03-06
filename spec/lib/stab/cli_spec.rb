@@ -44,4 +44,17 @@ describe Butcher::Stab::CLI do
       end
     end
   end
+
+  context "options" do
+    mock_cache(:nodes) do
+      {"10.1.1.1" => %W(app.node app.node.com)}
+    end
+
+    describe ":login" do
+      it "should include login in ssh params" do
+        Butcher::Stab::CLI.any_instance.expects(:exec).with("ssh 10.1.1.1 -l username").returns(true).once
+        Butcher::Stab::CLI.new.run("app", {:login => "username"})
+      end
+    end
+  end
 end

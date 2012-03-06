@@ -13,9 +13,10 @@ level of a chef directory.
 SSH into a node based on a grep of the node name.
 
         Usage: stab [options] node_name
-          -h, --help             # prints usage
           -c, --cache-dir DIR    # saves node list here (default: /tmp/butcher)
           -f, --force            # download new node list even if a cache file exists
+          -h, --help             # prints usage
+          -l, --login LOGIN      # ssh with specified username
           -v, --verbose          # be expressive
 
 Node name is loosely matched against name attributes given to nodes in chef. If multiple

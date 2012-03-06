@@ -7,15 +7,15 @@ class Butcher::Stab::CLI
     self.node_matcher = Array(arguments).first
     return "" if node_matcher.nil?
 
-    connect(matching_node)
+    ssh_to(matching_node)
   end
 
   private
 
-  def connect(ip)
+  def ssh_to(ip)
     STDOUT.sync = true # exec takes over stdout in tests, so sync output
     puts "Connecting to #{node_matcher} at #{ip}" if options[:verbose]
-    exec("ssh #{ip}")
+    exec("ssh #{ip}#{ssh_options}")
   end
 
   def matching_node
@@ -26,5 +26,11 @@ class Butcher::Stab::CLI
     raise(Butcher::UnmatchedNode) if nodes.size == 0
     raise(Butcher::AmbiguousNode, Butcher::Cache.format_nodes_for_stderr(nodes)) if nodes.size > 1
     nodes.keys.first
+  end
+
+  def ssh_options
+    if options[:login]
+      " -l #{options[:login]}"
+    end
   end
 end
