@@ -20,9 +20,48 @@ describe Butcher::Cache, "initialization" do
   end
 end
 
+describe Butcher::Cache, "#nodes_file" do
+  context "cannot find knife.rb" do
+    it "should raise an error" do
+      File.expects(:exists?).with(".chef/knife.rb").returns(false)
+      lambda {
+        Butcher::Cache.instance.nodes_file
+      }.should raise_error(Butcher::NoKnifeRB)
+    end
+  end
+
+  context "sees a knife.rb" do
+    before { File.expects(:exists?).with(".chef/knife.rb").returns(true) }
+
+    context "without chef_server_url" do
+      it "should raise an error" do
+        File.expects(:read).with(".chef/knife.rb").returns(
+          'some random content'
+        )
+        lambda {
+          Butcher::Cache.instance.nodes_file
+        }.should raise_error(Butcher::NoKnifeOrganization)
+      end
+    end
+
+    context "with chef_server_url" do
+      let(:expected_file) { "#{Butcher::TestCache.cache_dir}/my_organization.cache" }
+
+      it "should set filename based on chef_server_url" do
+        File.expects(:read).with(".chef/knife.rb").returns(
+          'chef_server_url "https://api.opscode.com/organizations/my_organization"'
+        )
+        Butcher::Cache.instance.nodes_file.should == expected_file
+      end
+    end
+  end
+end
+
 describe Butcher::Cache, "#nodes" do
+  before { Butcher::Cache.any_instance.stubs(:organization).returns("ops_org") }
+
   context "cache file does not exist" do
-    let(:cache_file) { "#{Butcher::TestCache.cache_dir}/node.cache" }
+    let(:cache_file) { "#{Butcher::TestCache.cache_dir}/ops_org.cache" }
 
     before do
       File.exists?(cache_file).should be_false
@@ -40,15 +79,15 @@ describe Butcher::Cache, "#nodes" do
   end
 
   context "cache file exists" do
-    create_cache_file("node.cache") do |f|
+    create_cache_file("ops_org.cache") do |f|
       f.puts "5 minutes ago, app.node, app.domain.com, 192.168.1.1, some os"
       f.puts "1 minute ago, other.node, other.domain.com, 192.168.1.2, some os"
     end
 
     it "maps file to hash" do
       Butcher::Cache.instance.nodes.should == {
-          "192.168.1.1" => %W(app.node app.domain.com),
-          "192.168.1.2" => %W(other.node other.domain.com)
+        "192.168.1.1" => %W(app.node app.domain.com),
+        "192.168.1.2" => %W(other.node other.domain.com)
       }
     end
   end

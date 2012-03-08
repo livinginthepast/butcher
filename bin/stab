@@ -6,12 +6,13 @@ require 'optparse'
 EX_USAGE     = 64
 EX_UNMATCHED = 65
 EX_AMBIGUOUS = 66
+EX_KNIFE     = 67
 
 options = {}
 parser = OptionParser.new do |opts|
   opts.banner = "Usage: stab [options] node_name"
 
-  opts.on('-c', '--cache-dir DIR', 'Location to save cache files (default: /tmp/butcher)') do |dir|
+  opts.on('-c', '--cache-dir DIR', 'Location to save cache files (default: ~/.butcher/cache)') do |dir|
     ENV["CACHE_DIR"] = dir
   end
 
@@ -54,4 +55,12 @@ rescue Butcher::AmbiguousNode => e
   STDERR.puts %Q{Multiple nodes match "#{ARGV.first}"}
   STDERR.puts e.message
   exit EX_AMBIGUOUS
+rescue Butcher::NoKnifeRB
+  STDERR.puts "Unable to find knife.rb in ./.chef"
+  STDERR.puts "Are you stabbing from a valid working chef directory?"
+  exit EX_KNIFE
+rescue Butcher::NoKnifeOrganization
+  STDERR.puts "Unable to read organization from knife.rb"
+  STDERR.puts "Expected .chef/knife.rb to contain a chef_server_url"
+  exit EX_KNIFE
 end

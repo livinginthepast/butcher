@@ -1,12 +1,13 @@
 Feature: Stab
 
   Background:
-  # stubbing knife currently doesn't work, but tests pass anyways
-  #Given I could run `knife status` with stdout:
-  #"""
-  #1 minute ago, app.node, app.domain, 1.1.1.1, os
-  #"""
-    Given I could run `ssh 1.1.1.1` with stdout:
+    # stubbing knife currently doesn't work, but tests pass anyways
+    #Given I could run `knife status` with stdout:
+    #"""
+    #1 minute ago, app.node, app.domain, 1.1.1.1, os
+    #"""
+    Given I have a knife configuration file
+    And I could run `ssh 1.1.1.1` with stdout:
     """
     ssh yay!
     """
@@ -51,7 +52,7 @@ Feature: Stab
   Scenario: Don't download node list if already cached
     Given I have the following chef nodes:
       | 1 minute ago | app.node | app.domain | 1.1.1.1 | os |
-    Then a file named "tmp/test/node.cache" should exist
+    Then a file named "tmp/test/my_organization.cache" should exist
     When I run `stab app.node -c tmp/test -v`
     Then the output should not contain "Creating cache file of nodes"
 
@@ -97,3 +98,24 @@ Feature: Stab
     """
     user: I'm a computer!
     """
+
+  Scenario: User sees error message if knife.rb cannot be found
+    Given I don't have a knife configuration file
+    When I run `stab app.node -c tmp/test`
+    Then the stderr should contain:
+    """
+    Unable to find knife.rb in ./.chef
+    Are you stabbing from a valid working chef directory?
+    """
+    And the exit status should be 67
+
+  Scenario: User sees error message if knife.rb is invalid
+    Given I have an invalid knife configuration file
+    When I run `stab app.node -c tmp/test`
+    Then the stderr should contain:
+    """
+    Unable to read organization from knife.rb
+    Expected .chef/knife.rb to contain a chef_server_url
+    """
+    And the exit status should be 67
+

@@ -40,6 +40,7 @@ module Butcher::TestCache
 
   def self.cleanup # :nodoc:
     FileUtils.rm_rf("tmp")
+    FileUtils.rm_rf(".chef")
     ENV.delete("CACHE_DIR")
   end
 

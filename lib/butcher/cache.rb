@@ -3,8 +3,8 @@ require 'singleton'
 class Butcher::Cache
   include Singleton
 
-  CACHE_DIR = "/tmp/butcher"
-  NODES_FILENAME = "node.cache"
+  CACHE_DIR = "#{ENV["HOME"]}/.butcher/cache"
+  KNIFE_FILE = ".chef/knife.rb"
 
   def initialize
     FileUtils.mkdir_p(cache_dir)
@@ -31,10 +31,19 @@ class Butcher::Cache
     end.sort.join("\n")
   end
 
+  def nodes_file
+    "#{cache_dir}/#{organization}.cache"
+  end
+
   private
 
-  def nodes_file
-    "#{cache_dir}/#{NODES_FILENAME}"
+  def organization
+    raise Butcher::NoKnifeRB unless(File.exists?(KNIFE_FILE))
+    if m = File.read(KNIFE_FILE).match(/chef_server_url\s+".+organizations\/([^\/"]+)"/)
+      m[1]
+    else
+      raise Butcher::NoKnifeOrganization
+    end
   end
 
   def create_node_cachefile

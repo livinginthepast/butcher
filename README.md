@@ -13,7 +13,7 @@ level of a chef directory.
 SSH into a node based on a grep of the node name.
 
         Usage: stab [options] node_name
-          -c, --cache-dir DIR    # saves node list here (default: /tmp/butcher)
+          -c, --cache-dir DIR    # saves node list here (default: ~/.butcher/cache)
           -f, --force            # download new node list even if a cache file exists
           -h, --help             # prints usage
           -l, --login LOGIN      # ssh with specified username
@@ -33,6 +33,10 @@ nodes match a given string, a Butcher::AmbiguousNode error is thrown and the pro
         Multiple nodes match "node"
         ["app.node", "app.domain.com"] => 1.1.1.1
         ["other.node", "other.domain.com"] => 1.1.1.2
+
+Nodes are cached in a file named after your organization in Opscode. Stab discovers this
+by looking at the chef_server_url in your knife.rb. For this reason, stab can only be run
+from the top level of a chef repo.
 
 
 ## License
