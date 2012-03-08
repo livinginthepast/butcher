@@ -3,6 +3,16 @@
 Butcher is a set of command line tools intended to ease the use of Chef with a managed
 Opscode account.
 
+### Installation
+
+        gem install "butcher"
+
+Or stick this in your Gemfile
+
+       gem "butcher"
+       #  or
+       gem "butcher", "~>0.0.1"
+
 ## Commands
 
 The following commands are currently available. All commands should be run from the top
