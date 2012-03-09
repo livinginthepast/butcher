@@ -2,3 +2,10 @@ language: ruby
 rvm:
   - 1.9.3
 script: "bundle exec rspec spec && bundle exec cucumber features"
+notifications:
+  email:
+    recipients:
+      - e.saxby@modcloth.com
+      - github@modcloth.com
+    on_success: never
+    on_failure: always
