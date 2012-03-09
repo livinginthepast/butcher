@@ -20,6 +20,8 @@
 #    World(Butcher::TestCache::TestHelpers)
 #
 module Butcher::TestCache
+  PWD = ENV["PWD"]
+
   def self.setup_rspec(config)
     config.before(:each) do
       Butcher::TestCache.reset
@@ -40,8 +42,8 @@ module Butcher::TestCache
 
   def self.cleanup # :nodoc:
     FileUtils.rm_rf("tmp")
-    FileUtils.rm_rf(".chef")
     ENV.delete("CACHE_DIR")
+    ENV["PWD"] = PWD
   end
 
   def self.cache_dir # :nodoc:
@@ -51,6 +53,7 @@ module Butcher::TestCache
   private
 
   def self.setup
+    ENV["PWD"] = "#{PWD}/tmp"
     stub_cache
     FileUtils.mkdir_p("tmp/test")
   end

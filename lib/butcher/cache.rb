@@ -38,12 +38,16 @@ class Butcher::Cache
   private
 
   def organization
-    raise Butcher::NoKnifeRB unless(File.exists?(KNIFE_FILE))
-    if m = File.read(KNIFE_FILE).match(/chef_server_url\s+".+organizations\/([^\/"]+)"/)
+    raise Butcher::NoKnifeRB unless(File.exists?(knife_file))
+    if m = File.read(knife_file).match(/chef_server_url\s+".+organizations\/([^\/"]+)"/)
       m[1]
     else
       raise Butcher::NoKnifeOrganization
     end
+  end
+
+  def knife_file
+    File.expand_path(KNIFE_FILE, ENV["PWD"])
   end
 
   def create_node_cachefile

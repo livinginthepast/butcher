@@ -23,7 +23,7 @@ end
 describe Butcher::Cache, "#nodes_file" do
   context "cannot find knife.rb" do
     it "should raise an error" do
-      File.expects(:exists?).with(".chef/knife.rb").returns(false)
+      File.expects(:exists?).with("#{ENV["PWD"]}/.chef/knife.rb").returns(false)
       lambda {
         Butcher::Cache.instance.nodes_file
       }.should raise_error(Butcher::NoKnifeRB)
@@ -31,11 +31,11 @@ describe Butcher::Cache, "#nodes_file" do
   end
 
   context "sees a knife.rb" do
-    before { File.expects(:exists?).with(".chef/knife.rb").returns(true) }
+    before { File.expects(:exists?).with("#{ENV["PWD"]}/.chef/knife.rb").returns(true) }
 
     context "without chef_server_url" do
       it "should raise an error" do
-        File.expects(:read).with(".chef/knife.rb").returns(
+        File.expects(:read).with("#{ENV["PWD"]}/.chef/knife.rb").returns(
           'some random content'
         )
         lambda {
@@ -48,7 +48,7 @@ describe Butcher::Cache, "#nodes_file" do
       let(:expected_file) { "#{Butcher::TestCache.cache_dir}/my_organization.cache" }
 
       it "should set filename based on chef_server_url" do
-        File.expects(:read).with(".chef/knife.rb").returns(
+        File.expects(:read).with("#{ENV["PWD"]}/.chef/knife.rb").returns(
           'chef_server_url "https://api.opscode.com/organizations/my_organization"'
         )
         Butcher::Cache.instance.nodes_file.should == expected_file
@@ -58,11 +58,10 @@ describe Butcher::Cache, "#nodes_file" do
 end
 
 describe Butcher::Cache, "#nodes" do
-  before { Butcher::Cache.any_instance.stubs(:organization).returns("ops_org") }
+  let(:cache_file) { "#{Butcher::TestCache.cache_dir}/ops_org.cache" }
+  before { Butcher::Cache.any_instance.stubs(:nodes_file).returns(cache_file) }
 
   context "cache file does not exist" do
-    let(:cache_file) { "#{Butcher::TestCache.cache_dir}/ops_org.cache" }
-
     before do
       File.exists?(cache_file).should be_false
       Butcher::Cache.any_instance.stubs(:`).with("knife status").returns("knife return codes")
