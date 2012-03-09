@@ -2,20 +2,21 @@ require 'spec_helper'
 
 describe Butcher::Cache, "initialization" do
   ## singletons do not reset after initialization, so we run tests against clones
-  let(:cache_class) { Butcher::Cache.clone }
 
+  class CacheSingletonForEnv < Butcher::Cache; end
   it "should accept cache_dir from env" do
     ENV["CACHE_DIR"] = "tmp/cache_from_options"
     test(?d, "tmp/cache_from_options").should be_false
-    cache_class.instance
+    CacheSingletonForEnv.instance
     ENV["CACHE_DIR"] = nil
     test(?d, "tmp/cache_from_options").should be_true
   end
 
+  class CacheSingleton < Butcher::Cache; end
   it "should create cache directory" do
-    cache_class.any_instance.stubs(:cache_dir).returns("tmp/cache_stub")
+    CacheSingleton.any_instance.stubs(:cache_dir).returns("tmp/cache_stub")
     test(?d, "tmp/cache_stub").should be_false
-    cache_class.instance
+    CacheSingleton.instance
     test(?d, "tmp/cache_stub").should be_true
   end
 end
