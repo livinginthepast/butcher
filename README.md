@@ -49,7 +49,7 @@ by looking at the chef_server_url in your knife.rb. For this reason, stab can on
 from the top level of a chef repo.
 
 
-### Build Status
+## Build Status
 
 ![Build status](https://secure.travis-ci.org/modcloth/butcher.png)
 
