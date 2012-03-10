@@ -51,7 +51,7 @@ from the top level of a chef repo.
 
 ## Build Status
 
-![Build status](https://secure.travis-ci.org/modcloth/butcher.png)
+[![Build status](https://secure.travis-ci.org/modcloth/butcher.png)](http://travis-ci.org/modcloth/butcher)
 
 
 ## License
