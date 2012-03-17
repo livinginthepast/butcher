@@ -27,7 +27,7 @@ class Butcher::Cache
 
   def self.format_nodes_for_stderr(nodes)
     nodes.map do |key, value|
-      %Q{#{value} => #{key}}
+      %Q{#{value.inspect} => #{key}}
     end.sort.join("\n")
   end
 

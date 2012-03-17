@@ -19,10 +19,6 @@ class Butcher::Stab::CLI
   end
 
   def matching_node
-    nodes = Butcher::Cache.instance.nodes(options).select do |k, v|
-      String(v).include? self.node_matcher
-    end
-
     raise(Butcher::UnmatchedNode) if nodes.size == 0
     raise(Butcher::AmbiguousNode, Butcher::Cache.format_nodes_for_stderr(nodes)) if nodes.size > 1
     nodes.keys.first
@@ -31,6 +27,12 @@ class Butcher::Stab::CLI
   def ssh_options
     if options[:login]
       " -l #{options[:login]}"
+    end
+  end
+
+  def nodes
+    @nodes ||= Butcher::Cache.instance.nodes(options).reject do |k, v|
+      ! String(v).include? self.node_matcher
     end
   end
 end
