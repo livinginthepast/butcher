@@ -21,7 +21,7 @@ Gem::Specification.new do |s|
   # specify any dependencies here; for example:
   s.add_development_dependency "rspec", "> 2"
   s.add_development_dependency "aruba"
-  s.add_development_dependency "aruba-doubles"
+  s.add_development_dependency "aruba-doubles", "~>0.2.3"
   s.add_development_dependency "guard-rspec"
   s.add_development_dependency "guard-cucumber"
   s.add_development_dependency "mocha"
