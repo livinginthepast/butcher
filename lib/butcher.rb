@@ -1,4 +1,5 @@
 require "butcher/version"
+require "fileutils"
 
 module Butcher
   class UnmatchedNode       < Exception;end
