@@ -60,6 +60,7 @@ Feature: Stab
       | 1 minute ago | app.node | app.domain | 1.1.1.1 | os |
     When I run `stab app.node -c tmp/test -f -v`
     Then the output should contain "Creating cache file of nodes"
+    And the double `knife status` should have been run
     And the exit status should be 0
 
   Scenario: User sees error message if no node matches given name
