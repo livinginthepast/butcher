@@ -7,7 +7,7 @@ Feature: Stab
     #1 minute ago, app.node, app.domain, 1.1.1.1, os
     #"""
     Given I have a knife configuration file
-    And I could run `ssh 1.1.1.1` with stdout:
+    And I double `ssh 1.1.1.1` with stdout:
     """
     ssh yay!
     """
@@ -89,7 +89,7 @@ Feature: Stab
   Scenario: User can connect to server with given user name
     Given I have the following chef nodes:
       | 1 minute ago | app.node | app.domain | 1.1.1.1 | os |
-    Given I could run `ssh 1.1.1.1 -l user` with stdout:
+    Given I double `ssh 1.1.1.1 -l user` with stdout:
     """
     user: I'm a computer!
     """
