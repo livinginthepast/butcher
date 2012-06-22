@@ -1,11 +1,10 @@
 Feature: Stab
 
   Background:
-    # stubbing knife currently doesn't work, but tests pass anyways
-    #Given I could run `knife status` with stdout:
-    #"""
-    #1 minute ago, app.node, app.domain, 1.1.1.1, os
-    #"""
+    Given I double `knife status` with stdout:
+    """
+    1 minute ago, app.node, app.domain, 1.1.1.1, os
+    """
     Given I have a knife configuration file
     And I double `ssh 1.1.1.1` with stdout:
     """
@@ -61,7 +60,7 @@ Feature: Stab
       | 1 minute ago | app.node | app.domain | 1.1.1.1 | os |
     When I run `stab app.node -c tmp/test -f -v`
     Then the output should contain "Creating cache file of nodes"
-    #And the exit status should be 0      ## Butcher::Cache does not use stubbed knife
+    And the exit status should be 0
 
   Scenario: User sees error message if no node matches given name
     Given I have the following chef nodes:
