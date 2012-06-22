@@ -26,5 +26,5 @@ Gem::Specification.new do |s|
   s.add_development_dependency "guard-cucumber"
   s.add_development_dependency "mocha"
   # s.add_runtime_dependency "x"
-  s.add_runtime_dependency "chef"
+  s.add_runtime_dependency "chef", "~> 10.12.0"
 end
