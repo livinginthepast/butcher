@@ -51,8 +51,10 @@ class Butcher::Cache
   end
 
   def create_node_cachefile
-    File.open(nodes_file, "w") do |file|
-      file.puts %x[knife status]
+    with_safe_paths do
+      File.open(nodes_file, "w") do |file|
+        file.puts %x[knife status]
+      end
     end
   end
 
@@ -65,5 +67,16 @@ class Butcher::Cache
     File.open(nodes_file) do |f|
       block.call f
     end
+  end
+
+  # RVM rewrites paths to ensure that it is first. This makes it impossible
+  # to use aruba in cucumber with any gem executables.
+  def with_safe_paths
+    original_path = (ENV["PATH"] || '').split(::File::PATH_SEPARATOR)
+    aruba_path = original_path.select { |x| x =~ /\/tmp\/d\d{8}-\d+-.+/}
+    ENV['PATH'] = (aruba_path | original_path).join(::File::PATH_SEPARATOR)
+    yield
+  ensure
+    ENV["PATH"] = original_path.join(::File::PATH_SEPARATOR)
   end
 end
