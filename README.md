@@ -1,5 +1,7 @@
 # Butcher
 
+[![Build status](https://secure.travis-ci.org/livinginthepast/butcher.png)](http://travis-ci.org/livinginthepast/butcher)
+
 Butcher is a set of command line tools intended to ease the use of Chef with a managed
 Opscode account.
 
@@ -47,11 +49,6 @@ nodes match a given string, a Butcher::AmbiguousNode error is thrown and the pro
 Nodes are cached in a file named after your organization in Opscode. Stab discovers this
 by looking at the chef_server_url in your knife.rb. For this reason, stab can only be run
 from the top level of a chef repo.
-
-
-## Build Status
-
-[![Build status](https://secure.travis-ci.org/modcloth/butcher.png)](http://travis-ci.org/modcloth/butcher)
 
 
 ## License
