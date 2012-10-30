@@ -1,4 +1,5 @@
 require 'singleton'
+require 'chef/config'
 
 class Butcher::Cache
   include Singleton
@@ -39,7 +40,8 @@ class Butcher::Cache
 
   def organization
     raise Butcher::NoKnifeRB unless(File.exists?(knife_file))
-    if m = File.read(knife_file).match(/chef_server_url\s+".+organizations\/([^\/"]+)"/)
+    Chef::Config.from_file(knife_file)
+    if m = Chef::Config[:chef_server_url].match(%r[.+/organizations\/([^\/"]+)])
       m[1]
     else
       raise Butcher::NoKnifeOrganization

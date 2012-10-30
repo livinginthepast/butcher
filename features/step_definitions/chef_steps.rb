@@ -8,6 +8,8 @@ Given /I (don't|) ?have a knife configuration file/ do |expectation|
       Given a file named "#{ENV["PWD"]}/.chef/knife.rb" with:
       """
       chef_server_url "https://opscode.url/organizations/my_organization"
+      validation_key  "my_organization.pem"
+      validation_client_name "my_organization-validator"
       """
     }
   end

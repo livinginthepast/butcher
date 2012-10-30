@@ -32,13 +32,17 @@ describe Butcher::Cache, "#nodes_file" do
   end
 
   context "sees a knife.rb" do
-    before { File.expects(:exists?).with("#{ENV["PWD"]}/.chef/knife.rb").returns(true) }
+    before {
+      File.expects(:exists?).with("#{ENV["PWD"]}/.chef/knife.rb").returns(true)
+      Chef::Config.expects(:from_file).with("#{ENV["PWD"]}/.chef/knife.rb").returns(true)
+    }
 
     context "without chef_server_url" do
+      before {
+        Chef::Config.expects(:[]).with(:chef_server_url).returns("random content")
+      }
+
       it "should raise an error" do
-        File.expects(:read).with("#{ENV["PWD"]}/.chef/knife.rb").returns(
-          'some random content'
-        )
         lambda {
           Butcher::Cache.instance.nodes_file
         }.should raise_error(Butcher::NoKnifeOrganization)
@@ -47,11 +51,11 @@ describe Butcher::Cache, "#nodes_file" do
 
     context "with chef_server_url" do
       let(:expected_file) { "#{Butcher::TestCache.cache_dir}/my_organization.cache" }
+      before {
+        Chef::Config.expects(:[]).with(:chef_server_url).returns("https://api.opscode.com/organizations/my_organization")
+      }
 
       it "should set filename based on chef_server_url" do
-        File.expects(:read).with("#{ENV["PWD"]}/.chef/knife.rb").returns(
-          'chef_server_url "https://api.opscode.com/organizations/my_organization"'
-        )
         Butcher::Cache.instance.nodes_file.should == expected_file
       end
     end
