@@ -18,14 +18,5 @@ Gem::Specification.new do |s|
   s.executables   = `git ls-files -- bin/*`.split("\n").map{ |f| File.basename(f) }
   s.require_paths = %W(lib)
 
-  # specify any dependencies here; for example:
-  s.add_development_dependency "rspec", "> 2"
-  s.add_development_dependency "aruba"
-  s.add_development_dependency "aruba-doubles"
-  s.add_development_dependency "rb-fsevent", '~> 0.9.1'
-  s.add_development_dependency "guard-rspec"
-  s.add_development_dependency "guard-cucumber"
-  s.add_development_dependency "mocha"
-  # s.add_runtime_dependency "x"
   s.add_runtime_dependency "chef", "~> 10.14"
 end
