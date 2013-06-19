@@ -5,9 +5,9 @@ require "butcher/version"
 Gem::Specification.new do |s|
   s.name        = "butcher"
   s.version     = Butcher::VERSION
-  s.authors     = ["ModCloth", "Eric Saxby"]
+  s.authors     = ["Eric Saxby"]
   s.email       = %W(git@modcloth.com)
-  s.homepage    = "https://github.com/modcloth/butcher"
+  s.homepage    = "https://github.com/livinginthepast/butcher"
   s.summary     = %q{All the things to make a chef}
   s.description = %q{Chef is a tool for managing server automation. A good butcher makes for a good chef.}
 
