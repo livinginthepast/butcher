@@ -8,51 +8,17 @@ EX_UNMATCHED = 65
 EX_AMBIGUOUS = 66
 EX_KNIFE     = 67
 
-options = {}
-parser = OptionParser.new do |opts|
-  opts.banner = "Usage: stab [options] node_name"
-
-  opts.on('-c', '--cache-dir DIR', 'Location to save cache files (default: ~/.butcher/cache)') do |dir|
-    ENV["CACHE_DIR"] = dir
-  end
-
-  opts.on('-f', '--force', 'Check for new nodes even if a cache file exists') do
-    options[:force] = true
-  end
-
-  opts.on('-h', '--help', 'Display this screen') do
-    puts opts
-    exit
-  end
-
-  opts.on('-l', '--login LOGIN', 'Use LOGIN for ssh session') do |login|
-    options[:login] = login
-  end
-
-  opts.on("-v", "--[no-]verbose", "Run verbosely") do |v|
-    options[:verbose] = v
-  end
-end
-
-begin parser.parse!
-rescue OptionParser::InvalidOption => e
-  puts e
-  puts parser
-  exit EX_USAGE
-end
-
-if ARGV == []
-  puts parser
-  exit EX_USAGE
-end
-
+runner = Butcher::Stab::CLI.new(ARGV)
 begin
-  Butcher::Stab::CLI.new.run(ARGV, options)
+  runner.execute!
+rescue Butcher::Stab::UsageError => e
+  STDERR.puts e.message
+  exit EX_USAGE
 rescue Butcher::UnmatchedNode
-  STDERR.puts %Q{Unable to find node "#{ARGV.first}"}
+  STDERR.puts %Q{Unable to find node "#{runner.node_name}"}
   exit EX_UNMATCHED
 rescue Butcher::AmbiguousNode => e
-  STDERR.puts %Q{Multiple nodes match "#{ARGV.first}"}
+  STDERR.puts %Q{Multiple nodes match "#{runner.node_name}"}
   STDERR.puts e.message
   exit EX_AMBIGUOUS
 rescue Butcher::NoKnifeRB

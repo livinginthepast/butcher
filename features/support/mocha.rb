@@ -1,4 +1,4 @@
-require "mocha"
+require "mocha/setup"
 
 World(Mocha::API)
 

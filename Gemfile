@@ -11,4 +11,5 @@ group :test do
   gem "guard-rspec"
   gem "guard-cucumber"
   gem "mocha"
+  gem 'pry-nav'
 end

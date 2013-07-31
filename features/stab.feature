@@ -16,7 +16,7 @@ Feature: Stab
     Then the exit status should be 0
     And the output should contain:
     """
-    Usage: stab [options] node_name
+    Usage: stab [options] <node name> [ssh options]
     """
 
   Scenario: Usage information when no node name is given
@@ -24,49 +24,35 @@ Feature: Stab
     Then the exit status should be 64
     And the output should contain:
     """
-    Usage: stab [options] node_name
+    Usage: stab [options] <node name> [ssh options]
     """
-
-  Scenario: Invalid option
-    When I run `stab --invalid-option`
-    Then the exit status should be 64
-    And the output should contain:
-    """
-    invalid option: --invalid-option
-    Usage: stab [options] node_name
-    """
-
-  Scenario: Set cache directory
-    Given a directory named "tmp/test_dir" should not exist
-    When I run `stab app.node -c tmp/test_dir`
-    Then a directory named "tmp/test_dir" should exist
 
   Scenario: Tell user what IP address ssh uses
     Given I have the following chef nodes:
       | 1 minute ago | app.node | app.domain | 1.1.1.1 | os |
-    When I run `stab app.node -c tmp/test -v`
+    When I run `stab app.node -v`
     Then the output should contain "Connecting to app.node at 1.1.1.1"
     Then the output should contain "ssh yay!"
 
   Scenario: Don't download node list if already cached
     Given I have the following chef nodes:
       | 1 minute ago | app.node | app.domain | 1.1.1.1 | os |
-    Then a file named "tmp/test/my_organization.cache" should exist
-    When I run `stab app.node -c tmp/test -v`
+    Then a file named "tmp/test/.butcher/cache/my_organization.cache" should exist
+    When I run `stab app.node -v`
     Then the output should not contain "Creating cache file of nodes"
 
   Scenario: Force download of cache file
     Given I have the following chef nodes:
       | 1 minute ago | app.node | app.domain | 1.1.1.1 | os |
-    When I run `stab app.node -c tmp/test -f -v`
+    When I run `stab app.node -f -v`
     Then the output should contain "Creating cache file of nodes"
-    And the double `knife status` should have been run
     And the exit status should be 0
+    And the double `knife status` should have been run
 
   Scenario: User sees error message if no node matches given name
     Given I have the following chef nodes:
       | 1 minute ago | app.node | app.domain | 1.1.1.1 | os |
-    When I run `stab some.node -c tmp/test`
+    When I run `stab some.node`
     Then the stderr should contain:
     """
     Unable to find node "some.node"
@@ -77,7 +63,7 @@ Feature: Stab
     Given I have the following chef nodes:
       | 1 minute ago | other.node | other.domain | 1.1.1.2 | os |
       | 1 minute ago | app.node   | app.domain   | 1.1.1.1 | os |
-    When I run `stab node -c tmp/test`
+    When I run `stab node`
     Then the stderr should contain:
     """
     Multiple nodes match "node"
@@ -93,15 +79,22 @@ Feature: Stab
     """
     user: I'm a computer!
     """
-    When I run `stab app.node -c tmp/test -l user`
+    When I run `stab app.node -l user`
     Then the stdout should contain:
     """
     user: I'm a computer!
     """
 
+  Scenario: Arbitrary command line options are passed to ssh
+    Given I have the following chef nodes:
+      | 1 minute ago | app.node | app.domain | 1.1.1.1 | os |
+    Given I double `ssh 1.1.1.1 -l user --arrrh`
+    When I run `stab app.node -l user --arrrh`
+    Then the double `ssh 1.1.1.1 -l user --arrrh` should have been run
+
   Scenario: User sees error message if knife.rb cannot be found
     Given I don't have a knife configuration file
-    When I run `stab app.node -c tmp/test`
+    When I run `stab app.node`
     Then the stderr should contain:
     """
     Unable to find knife.rb in ./.chef
@@ -111,7 +104,7 @@ Feature: Stab
 
   Scenario: User sees error message if knife.rb is invalid
     Given I have an invalid knife configuration file
-    When I run `stab app.node -c tmp/test`
+    When I run `stab app.node`
     Then the stderr should contain:
     """
     Unable to read organization from knife.rb

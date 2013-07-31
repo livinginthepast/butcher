@@ -4,12 +4,7 @@ require 'chef/config'
 class Butcher::Cache
   include Singleton
 
-  CACHE_DIR = "#{ENV["HOME"]}/.butcher/cache"
   KNIFE_FILE = ".chef/knife.rb"
-
-  def initialize
-    FileUtils.mkdir_p(cache_dir)
-  end
 
   def nodes(options = {})
     hash = {}
@@ -23,7 +18,7 @@ class Butcher::Cache
   end
 
   def cache_dir # :nodoc:
-    ENV["CACHE_DIR"] || CACHE_DIR
+    "#{ENV["HOME"]}/.butcher/cache"
   end
 
   def self.format_nodes_for_stderr(nodes)
@@ -54,6 +49,7 @@ class Butcher::Cache
 
   def create_node_cachefile
     with_safe_paths do
+      FileUtils.mkdir_p(cache_dir)
       File.open(nodes_file, "w") do |file|
         file.puts %x[knife status]
       end

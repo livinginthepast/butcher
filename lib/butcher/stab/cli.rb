@@ -1,22 +1,37 @@
 class Butcher::Stab::CLI
-  attr_accessor :node_matcher
-  attr_accessor :options
+  attr_accessor :argv, :options, :stdin, :stdout, :stderr, :kernel
 
-  def run(arguments, options = {})
-    self.options = options
-    self.node_matcher = Array(arguments).first
-    return "" if node_matcher.nil?
+  def initialize(argv, stdin=STDIN, stdout=STDOUT, stderr=STDERR, kernel=Kernel)
+    self.argv = argv
+    self.stdin = stdin
+    self.stdout = stdout
+    self.stderr = stderr
+    self.kernel = kernel
+    self.options = {}
+    optparse
+  end
+
+  def execute!
+    return stdout.puts(usage) if options[:help]
+    raise Butcher::Stab::UsageError.new(usage) if node_name.nil?
 
     ssh_to(matching_node)
   end
 
-  private
-
-  def ssh_to(ip)
-    STDOUT.sync = true # exec takes over stdout in tests, so sync output
-    puts "Connecting to #{node_matcher} at #{ip}" if options[:verbose]
-    exec("ssh #{ip}#{ssh_options}")
+  def node_name
+    @node_name ||= argv.shift
   end
+
+  def usage
+    <<-END.gsub(/^ {6}/, '')
+      Usage: stab [options] <node name> [ssh options]
+        -f    --force       # download new node list even if a cache file exists
+        -v    --verbose     # be expressive
+        -h    --help        # print this info
+    END
+  end
+
+  private
 
   def matching_node
     raise(Butcher::UnmatchedNode) if nodes.size == 0
@@ -24,15 +39,21 @@ class Butcher::Stab::CLI
     nodes.keys.first
   end
 
-  def ssh_options
-    if options[:login]
-      " -l #{options[:login]}"
+  def nodes
+    @nodes ||= Butcher::Cache.instance.nodes(options).reject do |k, v|
+      ! String(v).include? self.node_name
     end
   end
 
-  def nodes
-    @nodes ||= Butcher::Cache.instance.nodes(options).reject do |k, v|
-      ! String(v).include? self.node_matcher
-    end
+  def optparse
+    options[:force] = !(argv.delete("--force") || argv.delete("-f")).nil?
+    options[:verbose] = !(argv.delete("--verbose") || argv.delete("-v")).nil?
+    options[:help] = !(argv.delete("--help") || argv.delete("-h")).nil?
+  end
+
+  def ssh_to(ip)
+    STDOUT.sync = true # exec takes over stdout in tests, so sync output
+    puts "Connecting to #{node_name} at #{ip}" if options[:verbose]
+    exec("ssh #{[ip, argv].flatten.join(' ')}")
   end
 end

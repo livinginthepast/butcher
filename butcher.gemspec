@@ -18,5 +18,5 @@ Gem::Specification.new do |s|
   s.executables   = `git ls-files -- bin/*`.split("\n").map{ |f| File.basename(f) }
   s.require_paths = %W(lib)
 
-  s.add_runtime_dependency "chef", "~> 10.14"
+  s.add_runtime_dependency "chef", ">= 10.14"
 end

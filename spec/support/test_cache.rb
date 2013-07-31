@@ -20,7 +20,8 @@
 #    World(Butcher::TestCache::TestHelpers)
 #
 module Butcher::TestCache
-  PWD = ENV["PWD"]
+  PWD = ENV['PWD']
+  HOME = ENV['HOME']
 
   def self.setup_rspec(config)
     config.before(:each) do
@@ -42,24 +43,21 @@ module Butcher::TestCache
 
   def self.cleanup # :nodoc:
     FileUtils.rm_rf("tmp")
-    ENV.delete("CACHE_DIR")
-    ENV["PWD"] = PWD
+    ENV['PWD'] = PWD
+    ENV['HOME'] = HOME
   end
 
   def self.cache_dir # :nodoc:
-    File.expand_path("tmp/test")
+    File.expand_path("tmp/test/.butcher/cache")
   end
 
   private
 
   def self.setup
-    ENV["PWD"] = "#{PWD}/tmp"
-    stub_cache
+    pwd = "#{PWD}/tmp/test"
+    ENV["PWD"] = pwd
+    ENV['HOME'] = pwd
     FileUtils.mkdir_p("tmp/test")
-  end
-
-  def self.stub_cache
-    ENV["CACHE_DIR"] = cache_dir
   end
 
   public
@@ -106,6 +104,7 @@ module Butcher::TestCache
 
     # Creates a file that Butcher::Cache can parse
     def create_cache_file(filename)
+      FileUtils.mkdir_p(Butcher::TestCache.cache_dir)
       File.open("#{Butcher::TestCache.cache_dir}/#{filename}", "w") do |file|
         yield file
       end

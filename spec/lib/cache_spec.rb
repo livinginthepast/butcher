@@ -1,26 +1,5 @@
 require 'spec_helper'
 
-describe Butcher::Cache, "initialization" do
-  ## singletons do not reset after initialization, so we run tests against clones
-
-  class CacheSingletonForEnv < Butcher::Cache; end
-  it "should accept cache_dir from env" do
-    ENV["CACHE_DIR"] = "tmp/cache_from_options"
-    test(?d, "tmp/cache_from_options").should be_false
-    CacheSingletonForEnv.instance
-    ENV["CACHE_DIR"] = nil
-    test(?d, "tmp/cache_from_options").should be_true
-  end
-
-  class CacheSingleton < Butcher::Cache; end
-  it "should create cache directory" do
-    CacheSingleton.any_instance.stubs(:cache_dir).returns("tmp/cache_stub")
-    test(?d, "tmp/cache_stub").should be_false
-    CacheSingleton.instance
-    test(?d, "tmp/cache_stub").should be_true
-  end
-end
-
 describe Butcher::Cache, "#nodes_file" do
   context "cannot find knife.rb" do
     it "should raise an error" do

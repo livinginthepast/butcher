@@ -5,5 +5,6 @@ require 'aruba/cucumber'
 require 'fileutils'
 require 'rspec/expectations'
 require 'butcher'
+require 'pry'
 
 Dir["#{File.dirname(__FILE__)}/../../spec/support/**/*.rb"].each { |f| require f unless /_spec\.rb$/.match(f) }
