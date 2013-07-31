@@ -61,7 +61,7 @@ from the top level of a chef repo.
 
 ## License
 
-Copyright (c) 2012 Eric Saxby
+Copyright (c) 2013 Eric Saxby
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
