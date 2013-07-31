@@ -34,14 +34,26 @@ class Butcher::Stab::CLI
   private
 
   def matching_node
-    raise(Butcher::UnmatchedNode) if nodes.size == 0
-    raise(Butcher::AmbiguousNode, Butcher::Cache.format_nodes_for_stderr(nodes)) if nodes.size > 1
-    nodes.keys.first
-  end
+    @node ||= begin
+      nodes = Butcher::Cache.instance.nodes(options).reject do |node|
+        ! node[:name].include? self.node_name
+      end
 
-  def nodes
-    @nodes ||= Butcher::Cache.instance.nodes(options).reject do |k, v|
-      ! String(v).include? self.node_name
+      raise(Butcher::UnmatchedNode) if nodes.size == 0
+
+      if nodes.size > 1
+        stdout.puts Butcher::Cache.formatted_nodes_for_output(nodes)
+        stdout.write "\n which server? > "
+        begin
+          choice = stdin.gets.chomp.to_i - 1
+        rescue Interrupt
+          exit
+        end
+      else
+        choice = 0
+      end
+
+      nodes[choice]
     end
   end
 
@@ -51,9 +63,9 @@ class Butcher::Stab::CLI
     options[:help] = !(argv.delete("--help") || argv.delete("-h")).nil?
   end
 
-  def ssh_to(ip)
+  def ssh_to(node)
     STDOUT.sync = true # exec takes over stdout in tests, so sync output
-    puts "Connecting to #{node_name} at #{ip}" if options[:verbose]
-    exec("ssh #{[ip, argv].flatten.join(' ')}")
+    puts "Connecting to #{node[:name]} at #{node[:ip]}" if options[:verbose]
+    exec("ssh #{[node[:ip], argv].flatten.join(' ')}")
   end
 end

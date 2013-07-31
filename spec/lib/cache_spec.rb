@@ -68,10 +68,21 @@ describe Butcher::Cache, "#nodes" do
     end
 
     it "maps file to hash" do
-      Butcher::Cache.instance.nodes.should == {
-        "192.168.1.1" => %W(app.node app.domain.com),
-        "192.168.1.2" => %W(other.node other.domain.com)
-      }
+      Butcher::Cache.instance.nodes.should == [
+        {:ip => "192.168.1.1", :name => "app.node", :fqdn => "app.domain.com"},
+        {:ip => "192.168.1.2", :name => "other.node", :fqdn => "other.domain.com"}
+      ]
     end
+  end
+end
+
+describe Butcher::Cache, '.formatted_nodes_for_output' do
+  it 'returns node info in a numbered list' do
+    nodes = [
+      {:ip => "123.4.5.6", :name => "node1", :fqdn => "node1.prod"},
+      {:ip => "901.4.5.6", :name => "node2", :fqdn => "node2.prod"}
+    ]
+    expect(Butcher::Cache.formatted_nodes_for_output(nodes)).
+      to eql(%Q{ 1    "node1" => 123.4.5.6\n 2    "node2" => 901.4.5.6})
   end
 end

@@ -99,9 +99,13 @@ describe Butcher::Stab::CLI, '#execute!' do
   end
 
   context "node cache file exists" do
-    mock_cache(:nodes) do
-      {"10.1.1.1" => %W(app.node app.node.com), "10.1.1.2" => %W(other.node other.node.com)}
-    end
+    let(:nodes) {
+      [
+        {:ip => "10.1.1.1", :name => 'app.node', :fqdn => 'app.node.com'},
+        {:ip => "10.1.1.2", :name => 'other.node', :fqdn => 'other.node.com'}
+      ]
+    }
+    before { Butcher::Cache.any_instance.stubs(:nodes).returns(nodes) }
 
     context "stabbing an existing node" do
       it "should open an SSH session to named node" do
@@ -126,18 +130,19 @@ describe Butcher::Stab::CLI, '#execute!' do
     end
 
     context "ambiguous stabbing" do
-      it "should raise an AmbiguousNode error" do
-        Butcher::Stab::CLI.any_instance.expects(:exec).never
-        expect {
-          Butcher::Stab::CLI.new(["node"]).execute!
-        }.to raise_error(Butcher::AmbiguousNode)
+      it "asks the user which server to connect to" do
+        stdin = mock(:gets => "2")
+        stdout = mock(:puts => Butcher::Cache.formatted_nodes_for_output(nodes), :write => "\n which server? > ")
+        Butcher::Stab::CLI.any_instance.expects(:exec).with("ssh 10.1.1.2").returns(true).once
+
+        Butcher::Stab::CLI.new(["node"], stdin, stdout).execute!
       end
     end
   end
 
   context "ssh options" do
     mock_cache(:nodes) do
-      {"10.1.1.1" => %W(app.node app.node.com)}
+      [{:ip => "10.1.1.1", :name => 'app.node', :fqdn => 'app.node.com'}]
     end
 
     describe ":login" do

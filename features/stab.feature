@@ -63,14 +63,16 @@ Feature: Stab
     Given I have the following chef nodes:
       | 1 minute ago | other.node | other.domain | 1.1.1.2 | os |
       | 1 minute ago | app.node   | app.domain   | 1.1.1.1 | os |
-    When I run `stab node`
-    Then the stderr should contain:
+    And I double `ssh 1.1.1.2`
+    When I run `stab node` interactively
+    And I type "2"
+    Then the stdout should contain:
     """
-    Multiple nodes match "node"
-    ["app.node", "app.domain"] => 1.1.1.1
-    ["other.node", "other.domain"] => 1.1.1.2
+     1    "app.node" => 1.1.1.1
+     2    "other.node" => 1.1.1.2
     """
-    And the exit status should be 66
+    Then the exit status should be 0
+    And the double `ssh 1.1.1.2` should have been run
 
   Scenario: User can connect to server with given user name
     Given I have the following chef nodes:

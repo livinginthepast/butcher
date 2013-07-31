@@ -7,24 +7,26 @@ class Butcher::Cache
   KNIFE_FILE = ".chef/knife.rb"
 
   def nodes(options = {})
-    hash = {}
+    n = []
     cache_file(options) do |file|
       while file.gets
         node = $_.split(", ")
-        hash[node[3]] = [node[1],node[2]]
+        n << {:ip => node[3], :name => node[1], :fqdn => node[2]}
       end
     end
-    hash
+    n.sort{ |a,b| a[:name] <=> b[:name] }
   end
 
   def cache_dir # :nodoc:
     "#{ENV["HOME"]}/.butcher/cache"
   end
 
-  def self.format_nodes_for_stderr(nodes)
-    nodes.map do |key, value|
-      %Q{#{value.inspect} => #{key}}
-    end.sort.join("\n")
+  def self.formatted_nodes_for_output(nodes)
+    i = 0
+    nodes.map do |node|
+      i += 1
+      sprintf("%- 5d %p => %s", i, node[:name], node[:ip])
+    end.join("\n")
   end
 
   def nodes_file

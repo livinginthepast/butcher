@@ -5,7 +5,6 @@ require 'optparse'
 
 EX_USAGE     = 64
 EX_UNMATCHED = 65
-EX_AMBIGUOUS = 66
 EX_KNIFE     = 67
 
 runner = Butcher::Stab::CLI.new(ARGV)
@@ -17,10 +16,6 @@ rescue Butcher::Stab::UsageError => e
 rescue Butcher::UnmatchedNode
   STDERR.puts %Q{Unable to find node "#{runner.node_name}"}
   exit EX_UNMATCHED
-rescue Butcher::AmbiguousNode => e
-  STDERR.puts %Q{Multiple nodes match "#{runner.node_name}"}
-  STDERR.puts e.message
-  exit EX_AMBIGUOUS
 rescue Butcher::NoKnifeRB
   STDERR.puts "Unable to find knife.rb in ./.chef"
   STDERR.puts "Are you stabbing from a valid working chef directory?"
